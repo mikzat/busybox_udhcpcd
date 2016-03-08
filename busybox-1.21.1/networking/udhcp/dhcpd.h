@@ -54,6 +54,8 @@ struct server_config_t {
 	char *notify_file;              /* what to run whenever leases are written */
 	char *sname;                    /* bootp server name */
 	char *boot_file;                /* bootp boot file option */
+	char *chaddr_filter;            /* client hardware address filter */
+	char *client_id_filter;         /* client ID option filter */
 	struct static_lease *static_leases; /* List of ip/mac pairs to assign static leases */
 } FIX_ALIASING;
 
