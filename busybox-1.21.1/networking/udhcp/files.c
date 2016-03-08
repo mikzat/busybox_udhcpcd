@@ -77,7 +77,9 @@ static const struct config_keyword keywords[] = {
 	{"lease_file"   , read_str        , &server_config.lease_file   , LEASES_FILE},
 	{"pidfile"      , read_str        , &server_config.pidfile      , "/var/run/udhcpd.pid"},
 	{"siaddr"       , udhcp_str2nip   , &server_config.siaddr_nip   , "0.0.0.0"},
+	{"chaddr_filter", read_str        , &server_config.chaddr_filter, "************"},
 	/* keywords with no defaults must be last! */
+	{"client_id_filter", read_str     , &server_config.client_id_filter, NULL},
 	{"option"       , udhcp_str2optset, &server_config.options      , ""},
 	{"opt"          , udhcp_str2optset, &server_config.options      , ""},
 	{"notify_file"  , read_str        , &server_config.notify_file  , NULL},
