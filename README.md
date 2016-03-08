@@ -1,5 +1,5 @@
-# busybox_udhcpcd
-Patch for busybox udhcpcd to add config options for restricting what types of clients can connect.
+# udhcpcd advanced filters
+Patch for Busybox `udhcpcd` to add config options for restricting what types of clients can connect.
 
 ### chaddr_filter
 MAC filter, allows specifying a MAC address Mask with wildcards `**`, which will cause the DHCP server to ignore requests coming from any other devices. Wildcards must be in pairs, can't wildcard partial-bytes.
