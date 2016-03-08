@@ -466,6 +466,48 @@ int udhcpd_main(int argc UNUSED_PARAM, char **argv)
 			}
 		}
 
+        /* Check if we are interested in the sender of this packet */
+        if (server_config.chaddr_filter)
+        {
+            int fail = 0;
+            unsigned int mac_bytes[6];
+            sscanf(server_config.chaddr_filter, "%2x%2x%2x%2x%2x%2x", mac_bytes, mac_bytes+1, mac_bytes+2, mac_bytes+3, mac_bytes+4, mac_bytes+5);
+            for (int i = 0; i < 6; i++)
+            {
+                if ((server_config.chaddr_filter[i*2] == '*') && (server_config.chaddr_filter[i*2+1] == '*'))
+                    continue;
+                else if (((server_config.chaddr_filter[i*2] == '*') && (server_config.chaddr_filter[i*2+1] != '*')) || ((server_config.chaddr_filter[i*2] != '*') && (server_config.chaddr_filter[i*2+1] == '*')))
+                {
+                    bb_info_msg("Error with config option 'chaddr_filter', only use wildcards (*) in pairs\n");
+                    fail = 1;
+                    break;
+                }
+                
+                if ((packet.chaddr[i] != mac_bytes[i]))
+                {
+                    // bb_info_msg("%d does not match %d\n",packet.chaddr[i], mac_bytes[i]);
+                    fail = 1;
+                    break;
+                }
+            }
+            if (fail)
+            {
+                bb_info_msg("(%02x%02x%02x%02x%02x%02x) doesn't match filter", packet.chaddr[0], packet.chaddr[1], packet.chaddr[2], packet.chaddr[3], packet.chaddr[4], packet.chaddr[5]);
+                continue;
+            }
+			// bb_info_msg("Client Hardware Address matched filter");
+        }
+		
+		if (server_config.client_id_filter)
+		{
+			char *client_id_opt = udhcp_get_option(&packet, DHCP_CLIENT_ID);
+			if (!client_id_opt || strncmp(client_id_opt, server_config.client_id_filter, strlen(server_config.client_id_filter)) != 0) {
+				bb_info_msg("Client's ID (%s) doesn't match filter, ignoring", client_id_opt);
+				continue;
+			}
+			// bb_info_msg("Client ID matched filter");
+		}
+
 		/* Look for a static/dynamic lease */
 		static_lease_nip = get_static_nip_by_mac(server_config.static_leases, &packet.chaddr);
 		if (static_lease_nip) {
